@@ -1,0 +1,48 @@
+.day-selector {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+    .day-selector button {
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-weight: bold;
+    }
+
+    .day-selector .selected {
+        background-color: #000;
+        color: white;
+    }
+
+.schedule-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px;
+}
+
+.task-slot {
+    border-radius: 16px;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.task-lime {
+    background-color: #d9e98c;
+    color: #000;
+}
+
+.task-purple {
+    background-color: #c7bbf8;
+    color: #000;
+}
+
+.task-black {
+    background-color: #202020;
+    color: #fff;
+}

@@ -1,0 +1,20 @@
+﻿<div class="bottom-nav">
+    <button @onclick="@( () => NavigateTo("/") )">
+        <i class="fa fa-home"></i>
+    </button>
+    <button @onclick="@( () => NavigateTo("/calendar") )">
+        <i class="fa fa-calendar"></i>
+    </button>
+    <button @onclick="@( () => NavigateTo("/add-task") )">
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+	</button>
+    <button @onclick="@( () => NavigateTo("/profile") )">
+        <i class="fa fa-user"></i>
+    </button>
+</div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; }
+
+    private void NavigateTo(string url) => NavigationManager.NavigateTo(url);
+}
