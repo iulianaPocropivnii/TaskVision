@@ -1,0 +1,42 @@
+﻿@page "/calendar"
+<h2>Task schedule</h2>
+
+<div class="day-selector">
+    @foreach (var day in Enumerable.Range(8, 6))
+    {
+        <button class="@GetDayClass(day)" @onclick="() => selectedDay = day">
+            @day
+        </button>
+    }
+</div>
+
+<div class="schedule-grid">
+    @foreach (var slot in Schedule)
+    {
+        <div class="task-slot @slot.ColorClass">
+            <strong>@slot.Title</strong>
+            <span>@slot.Time</span>
+        </div>
+    }
+</div>
+
+@code {
+    private int selectedDay = 8;
+    private List<ScheduleItem> Schedule => new()
+    {
+        new ScheduleItem("Design registration process", "08AM–10AM", "lime"),
+        new ScheduleItem("User flow admin panel", "10AM–11AM", "purple"),
+        new ScheduleItem("Web application design", "11AM–02PM", "black"),
+        new ScheduleItem("Dashboard design", "02PM–06PM", "black")
+    };
+
+    private string GetDayClass(int day) => selectedDay == day ? "selected" : "";
+
+    public class ScheduleItem(string title, string time, string color)
+    {
+        public string Title { get; } = title;
+        public string Time { get; } = time;
+        public string ColorClass => $"task-{color}";
+    }
+}
+

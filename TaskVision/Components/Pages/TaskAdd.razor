@@ -1,0 +1,31 @@
+﻿@page "/add-task"
+@using TaskVision.Models.Tasks
+@using TaskVision.Services.Implementation
+
+<h3>Adaugă un Task Nou</h3>
+
+<div class="task-form">
+    <input placeholder="Titlu" @bind="task.Title" class="form-control" />
+    <textarea placeholder="Descriere" @bind="task.Description" class="form-control" rows="3"></textarea>
+    <button class="btn btn-primary" @onclick="AddTask">Salvează</button>
+
+    @if (showMessage)
+    {
+        <p class="success-message">Task-ul a fost salvat cu succes!</p>
+    }
+</div>
+
+@code {
+    private SimpleTask task = new();
+    private bool showMessage = false;
+
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(task.Title))
+        {
+            DatabaseService.Instance.AddDbTask(task);
+            task = new();
+            showMessage = true;
+        }
+    }
+}
