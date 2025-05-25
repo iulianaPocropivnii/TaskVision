@@ -10,10 +10,21 @@ namespace TaskVision.Models.Tasks
 {
     public class SimpleTask : ITask
     {
+        private readonly IDatabaseService _databaseService;
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         public string Title { get; set; }
         public string Description { get; set; }
+
+        public void UpdateTask()
+        {
+            _databaseService.UpdateDbTask(this);
+
+        }
+        public SimpleTask(IDatabaseService databaseService)
+        {
+            _databaseService = databaseService;
+        }
     }
 }
