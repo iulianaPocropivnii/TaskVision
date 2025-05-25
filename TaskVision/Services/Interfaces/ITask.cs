@@ -10,6 +10,8 @@ namespace TaskVision.Services.Interfaces
     {
         string Title { get; }
         string Description { get; }
+        DateTime Deadline { get; }
+        int Priority { get; }
         void UpdateTask();
     }
 }

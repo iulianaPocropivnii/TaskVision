@@ -1,0 +1,61 @@
+﻿@page "/strategy-demo"
+@using TaskVision.Models.Strategy
+@using TaskVision.Models.Tasks
+@using TaskVision.Services.Interfaces
+@inject IServiceProvider ServiceProvider
+
+<h3>Demo Strategy Pattern: Sortare Task-uri</h3>
+
+<div class="mb-3">
+    <button class="btn btn-primary me-2" @onclick="SortByDeadline">Sortare după Deadline</button>
+    <button class="btn btn-secondary" @onclick="SortByPriority">Sortare după Prioritate</button>
+</div>
+
+<ul>
+    @foreach (var task in sortedTasks)
+    {
+            <li>
+                <b>@task.Title</b> - @task.Description
+            @if (task.Deadline != null)
+            {
+                        <span> | Deadline: @task.Deadline.ToShortDateString()</span>
+            }
+            @if (task.Priority != null)
+            {
+                        <span> | Prioritate: @task.Priority</span>
+            }
+            </li>
+    }
+</ul>
+
+@code {
+    private List<ITask> allTasks;
+    private List<ITask> sortedTasks;
+    private TaskSorter sorter = new();
+
+    protected override void OnInitialized()
+    {
+        var db = (IDatabaseService)ServiceProvider.GetService(typeof(IDatabaseService));
+
+        allTasks = new List<ITask>
+        {
+            new DeadlineTask(db) { Title = "Task 1", Description = "Cu deadline", Deadline = DateTime.Today.AddDays(2), Priority = 2 },
+            new SimpleTask(db) { Title = "Task 2", Description = "Fără deadline" },
+            new DeadlineTask(db) { Title = "Task 3", Description = "Urgent", Deadline = DateTime.Today.AddDays(1), Priority = 1 }
+        };
+
+        sortedTasks = allTasks;
+    }
+
+    private void SortByDeadline()
+    {
+        sorter.SetStrategy(new SortByDeadline());
+        sortedTasks = sorter.ExecuteSort(allTasks).ToList();
+    }
+
+    private void SortByPriority()
+    {
+        sorter.SetStrategy(new SortByPriority());
+        sortedTasks = sorter.ExecuteSort(allTasks).ToList();
+    }
+}
