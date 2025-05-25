@@ -13,7 +13,8 @@ namespace TaskVision.Models.Tasks
         private readonly IDatabaseService _databaseService;
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-
+        public DateTime Deadline { get; set; }
+        public int Priority { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public void UpdateTask()
