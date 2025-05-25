@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SQLite;
+using TaskVision.Enum;
 using TaskVision.Services.Interfaces;
 
 namespace TaskVision.Models.Tasks
@@ -16,7 +17,7 @@ namespace TaskVision.Models.Tasks
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime Deadline { get; set; }
-        public int Priority { get; set; }
+        public TaskPriority Priority { get; set; }
         public void UpdateTask()
         {
             _databaseService.UpdateDbTask(this);

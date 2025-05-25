@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskVision.Enum;
 
 namespace TaskVision.Services.Interfaces
 {
@@ -11,7 +12,7 @@ namespace TaskVision.Services.Interfaces
         string Title { get; }
         string Description { get; }
         DateTime Deadline { get; }
-        int Priority { get; }
+        TaskPriority Priority { get; }
         void UpdateTask();
     }
 }
