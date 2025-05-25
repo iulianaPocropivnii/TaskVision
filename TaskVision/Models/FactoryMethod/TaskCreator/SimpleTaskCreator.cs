@@ -1,5 +1,6 @@
 ﻿using TaskVision.Services.Interfaces;
 using TaskVision.Models.Tasks;
+using TaskVision.Models.Tasks.Builder;
 
 namespace TaskVision.Models.FactoryMethod.TaskCreator
 {
@@ -14,7 +15,11 @@ namespace TaskVision.Models.FactoryMethod.TaskCreator
 
         public override ITask FactoryMethod()
         {
-            return new SimpleTask(_databaseService);
+            return new TaskBuilder()
+                .WithTitle("Titlu Default")
+                .WithDescription("Descriere simplă")
+                .WithDatabaseService(_databaseService)
+                .Build();
         }
     }
 }
