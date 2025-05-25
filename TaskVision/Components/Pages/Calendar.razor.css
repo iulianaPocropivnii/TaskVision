@@ -1,48 +1,34 @@
-.day-selector {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 10px 0;
+.calendar-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    max-width: 100%;
 }
 
-    .day-selector button {
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        font-weight: bold;
+.calendar-row {
+    display: contents;
+}
+
+.calendar-cell {
+    border: 1px solid #ccc;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    min-height: 70px;
+    position: relative;
+    background-color: #f8f9fa;
+}
+
+    .calendar-cell.other-month {
+        opacity: 0.5;
     }
 
-    .day-selector .selected {
-        background-color: #000;
-        color: white;
+    .calendar-cell.selected {
+        border: 2px solid #007bff;
+        background-color: #e7f1ff;
     }
 
-.schedule-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 10px;
-}
-
-.task-slot {
-    border-radius: 16px;
-    padding: 10px 16px;
-    color: #fff;
-    font-size: 14px;
-}
-
-.task-lime {
-    background-color: #d9e98c;
-    color: #000;
-}
-
-.task-purple {
-    background-color: #c7bbf8;
-    color: #000;
-}
-
-.task-black {
-    background-color: #202020;
-    color: #fff;
-}
+    .calendar-cell.has-event {
+        background-color: #d4edda;
+        border-color: #28a745;
+    }

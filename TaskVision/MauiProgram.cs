@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using TaskVision.Services.Interfaces;
+using TaskVision.Models.Calendar;
 
 namespace TaskVision
 {
@@ -15,9 +17,10 @@ namespace TaskVision
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<IGoogleCalendarAdapter, GoogleCalendarAdapter>();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 

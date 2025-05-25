@@ -1,42 +1,73 @@
 ﻿@page "/calendar"
-<h2>Task schedule</h2>
+@inject NavigationManager Navigation
 
-<div class="day-selector">
-    @foreach (var day in Enumerable.Range(8, 6))
-    {
-        <button class="@GetDayClass(day)" @onclick="() => selectedDay = day">
-            @day
-        </button>
-    }
-</div>
+<h3 class="text-center mb-4">Calendar Evenimente</h3>
 
-<div class="schedule-grid">
-    @foreach (var slot in Schedule)
+<div class="calendar-container">
+    @for (var week = 0; week < 6; week++)
     {
-        <div class="task-slot @slot.ColorClass">
-            <strong>@slot.Title</strong>
-            <span>@slot.Time</span>
+        <div class="calendar-row">
+            @for (var day = 0; day < 7; day++)
+            {
+                var current = calendarStart.AddDays(week * 7 + day);
+                var hasEvent = events.Any(e => e.Date.Date == current.Date);
+                var classes = "calendar-cell";
+
+                if (current.Month != selectedMonth.Month)
+                    classes += " other-month";
+
+                if (current.Date == selectedDate.Date)
+                    classes += " selected";
+
+                if (hasEvent)
+                    classes += " has-event";
+
+                <div class="@classes" @onclick="() => SelectDate(current)">
+                    <span>@current.Day</span>
+                </div>
+            }
         </div>
     }
 </div>
 
+<div class="mt-4">
+    <h5>Evenimente pentru: @selectedDate.ToShortDateString()</h5>
+    <ul>
+        @foreach (var ev in events.Where(e => e.Date.Date == selectedDate.Date))
+        {
+            <li>@ev.Title</li>
+        }
+    </ul>
+
+    <input type="text" placeholder="Titlu eveniment" @bind="eventTitle" class="form-control mt-2" />
+    <button class="btn btn-success mt-1" @onclick="AddEvent">Adaugă Eveniment</button>
+</div>
+
 @code {
-    private int selectedDay = 8;
-    private List<ScheduleItem> Schedule => new()
-    {
-        new ScheduleItem("Design registration process", "08AM–10AM", "lime"),
-        new ScheduleItem("User flow admin panel", "10AM–11AM", "purple"),
-        new ScheduleItem("Web application design", "11AM–02PM", "black"),
-        new ScheduleItem("Dashboard design", "02PM–06PM", "black")
-    };
+    private DateTime selectedDate = DateTime.Today;
+    private DateTime selectedMonth = DateTime.Today;
+    private DateTime calendarStart => selectedMonth.AddDays(-(int)selectedMonth.DayOfWeek);
 
-    private string GetDayClass(int day) => selectedDay == day ? "selected" : "";
+    private string eventTitle;
+    private List<CalendarEvent> events = new();
 
-    public class ScheduleItem(string title, string time, string color)
+    private void SelectDate(DateTime date)
     {
-        public string Title { get; } = title;
-        public string Time { get; } = time;
-        public string ColorClass => $"task-{color}";
+        selectedDate = date;
+    }
+
+    private void AddEvent()
+    {
+        if (!string.IsNullOrWhiteSpace(eventTitle))
+        {
+            events.Add(new CalendarEvent { Date = selectedDate, Title = eventTitle });
+            eventTitle = string.Empty;
+        }
+    }
+
+    public class CalendarEvent
+    {
+        public DateTime Date { get; set; }
+        public string Title { get; set; }
     }
 }
-
