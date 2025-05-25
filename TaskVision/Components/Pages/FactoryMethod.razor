@@ -1,0 +1,58 @@
+﻿@page "/factory-demo"
+@using TaskVision.Models.FactoryMethod.TaskCreator
+@using TaskVision.Services.Interfaces
+@inject IServiceProvider ServiceProvider
+
+<h3>Demo Factory Method</h3>
+
+<select @bind="selectedType" class="form-control mb-2">
+    <option value="simple">Task simplu</option>
+    <option value="recurring">Task recurent</option>
+    <option value="deadline">Task cu deadline</option>
+</select>
+
+<input class="form-control mb-2" placeholder="Titlu task" @bind="taskTitle" />
+<input class="form-control mb-2" placeholder="Descriere task" @bind="taskDescription" />
+
+<button class="btn btn-primary" @onclick="CreateTask">Creează Task</button>
+
+<ul class="mt-3">
+    @foreach (var t in tasks)
+    {
+        <li>
+            <b>@t.Title</b> - @t.Description
+        </li>
+    }
+</ul>
+
+@code {
+    private string selectedType = "simple";
+    private string taskTitle;
+    private string taskDescription;
+    private List<ITask> tasks = new();
+
+    private void CreateTask()
+    {
+        ITask task = selectedType switch
+        {
+            "simple" => new SimpleTaskCreator(GetDbService()).FactoryMethod(),
+            "recurring" => new RecurringTaskCreator(GetDbService()).FactoryMethod(),
+            "deadline" => new DeadlineTaskCreator(GetDbService()).FactoryMethod(),
+            _ => null
+        };
+
+        if (task != null)
+        {
+            task.GetType().GetProperty("Title")?.SetValue(task, taskTitle);
+            task.GetType().GetProperty("Description")?.SetValue(task, taskDescription);
+
+            tasks.Add(task);
+            taskTitle = taskDescription = string.Empty;
+        }
+    }
+
+    private IDatabaseService GetDbService()
+    {
+        return (IDatabaseService)ServiceProvider.GetService(typeof(IDatabaseService));
+    }
+}

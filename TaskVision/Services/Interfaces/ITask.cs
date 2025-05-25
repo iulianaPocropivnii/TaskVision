@@ -10,6 +10,6 @@ namespace TaskVision.Services.Interfaces
     {
         string Title { get; }
         string Description { get; }
-
+        void UpdateTask();
     }
 }
