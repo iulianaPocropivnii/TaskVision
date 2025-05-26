@@ -27,6 +27,16 @@ namespace TaskVision.Models.Tasks
         {
             _databaseService = databaseService;
         }
+        public ITask Clone()
+        {
+            return new DeadlineTask(_databaseService)
+            {
+                Title = this.Title,
+                Description = this.Description,
+                Deadline = this.Deadline,
+                Priority = this.Priority
+            };
+        }
     }
         
 }

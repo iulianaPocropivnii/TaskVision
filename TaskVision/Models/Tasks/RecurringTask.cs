@@ -26,5 +26,17 @@ namespace TaskVision.Models.Tasks
         {
             _databaseService = databaseService;
         }
+
+        public ITask Clone()
+        {
+            return new RecurringTask(_databaseService)
+            {
+                Id = this.Id,
+                Title = this.Title,
+                Description = this.Description,
+                Deadline = this.Deadline,
+                Priority = this.Priority
+            };
+        }
     }
 }

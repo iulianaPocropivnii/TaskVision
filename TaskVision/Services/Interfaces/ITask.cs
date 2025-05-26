@@ -7,7 +7,7 @@ using TaskVision.Enum;
 
 namespace TaskVision.Services.Interfaces
 {
-    public interface ITask
+    public interface ITask : IPrototype<ITask>
     {
         string Title { get; }
         string Description { get; }
