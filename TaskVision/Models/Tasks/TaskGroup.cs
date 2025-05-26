@@ -9,35 +9,55 @@ using TaskVision.Services.Interfaces;
 
 namespace TaskVision.Models.Tasks
 {
-    public class TaskGroup : ITask
+    namespace TaskVision.Models.Tasks
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public DateTime Deadline { get; set; }
-        public TaskPriority Priority { get; set; }
-
-        private List<ITask> _tasks = new();
-
-        public void AddTask(ITask task)
+        public class TaskGroup : ITask
         {
-            _tasks.Add(task);
-        }
+            private readonly List<ITask> _subTasks = new List<ITask>();
 
-        public void RemoveTask(ITask task)
-        {
-            _tasks.Remove(task);
-        }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public DateTime Deadline { get; set; }
+            public TaskPriority Priority { get; set; }
 
-        public List<ITask> GetTasks()
-        {
-            return _tasks;
-        }
+            public TaskGroup() { }
 
-        public void UpdateTask()
-        {
-            foreach (var task in _tasks)
+            public void AddTask(ITask task)
             {
-                task.UpdateTask();
+                _subTasks.Add(task);
+            }
+
+            public void RemoveTask(ITask task)
+            {
+                _subTasks.Remove(task);
+            }
+
+            public IEnumerable<ITask> GetSubTasks() => _subTasks;
+
+            public void UpdateTask()
+            {
+                foreach (var task in _subTasks)
+                {
+                    task.UpdateTask();
+                }
+            }
+
+            public ITask Clone()
+            {
+                var clonedGroup = new TaskGroup
+                {
+                    Title = this.Title,
+                    Description = this.Description,
+                    Deadline = this.Deadline,
+                    Priority = this.Priority
+                };
+
+                foreach (var task in _subTasks)
+                {
+                    clonedGroup.AddTask(task.Clone());
+                }
+
+                return clonedGroup;
             }
         }
     }
