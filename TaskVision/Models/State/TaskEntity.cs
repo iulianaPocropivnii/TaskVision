@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TaskVision.Enum;
+using TaskVision.Models.Memento;
 using TaskVision.Services.Interfaces;
 
 namespace TaskVision.Models.State
@@ -37,6 +38,17 @@ namespace TaskVision.Models.State
         public string GetCurrentState()
         {
             return _currentState.GetStateName();
+        }
+
+        public TaskMemento SaveState()
+        {
+            return new TaskMemento(Title, _currentState);
+        }
+
+        public void RestoreState(TaskMemento memento)
+        {
+            Title = memento.Title;
+            _currentState = memento.State;
         }
     }
 

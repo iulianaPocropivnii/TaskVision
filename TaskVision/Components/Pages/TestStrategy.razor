@@ -1,4 +1,5 @@
 ﻿@page "/strategy-demo"
+@using TaskVision.Enum
 @using TaskVision.Models.Strategy
 @using TaskVision.Models.Tasks
 @using TaskVision.Services.Interfaces
@@ -39,9 +40,9 @@
 
         allTasks = new List<ITask>
         {
-            new DeadlineTask(db) { Title = "Task 1", Description = "Cu deadline", Deadline = DateTime.Today.AddDays(2), Priority = 2 },
+            new DeadlineTask(db) { Title = "Task 1", Description = "Cu deadline", Deadline = DateTime.Today.AddDays(2), Priority = TaskPriority.Low },
             new SimpleTask(db) { Title = "Task 2", Description = "Fără deadline" },
-            new DeadlineTask(db) { Title = "Task 3", Description = "Urgent", Deadline = DateTime.Today.AddDays(1), Priority = 1 }
+            new DeadlineTask(db) { Title = "Task 3", Description = "Urgent", Deadline = DateTime.Today.AddDays(1), Priority = TaskPriority.Medium }
         };
 
         sortedTasks = allTasks;
