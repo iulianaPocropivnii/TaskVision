@@ -7,10 +7,12 @@
 @using TaskVision.Models.Strategy
 @using TaskVision.Models.Observer
 
-<h3 class="today-header">✅ Taskuri curente</h3>
+<div class="page-header">
+    <i class="fa-solid fa-check-square"></i>
+    <span>Taskuri curente</span>
+</div>
 
 <div class="sort-controls">
-    <label>🔽 Sortează după:</label>
     <select @bind="selectedSort">
         <option value="title">Titlu</option>
         <option value="priority">Prioritate</option>
@@ -18,16 +20,17 @@
     </select>
 </div>
 
+
 @if (tasks.Any())
 {
     <div class="calendar-container">
         @foreach (var task in tasks)
         {
-            <div class="calendar-task">
+            <div class="calendar-task" @onclick="() => ToggleDescription(task.Id)">
                 <div class="priority-indicator @GetPriorityClass(task.Priority)" title="Prioritate: @task.Priority"></div>
 
                 <div class="task-top-row">
-                    <button class="edit-btn" @onclick="() => StartEditing(task)">📝</button>
+                    <button class="edit-btn" @onclick:stopPropagation="true" @onclick="() => StartEditing(task)">📝</button>
                     <div class="task-title">
                         @if (IsEditing(task))
                         {
@@ -40,7 +43,8 @@
                     </div>
                 </div>
 
-                <div class="task-bottom-row">
+                @if (expandedTaskId == task.Id)
+                {
                     @if (IsEditing(task))
                     {
                         <textarea class="edit-textarea" @bind="editableTask.Description"></textarea>
@@ -49,12 +53,14 @@
                     {
                         <div class="task-desc">@task.Description</div>
                     }
+                }
 
+                <div class="task-bottom-row">
                     <div class="task-meta">
                         <span class="task-time-badge">
                             @task.Start.ToString("hh tt") - @task.End.ToString("hh tt")
                         </span>
-                        <button class="state-btn" @onclick="() => ChangeState(task)">
+                        <button class="state-btn" @onclick:stopPropagation="true" @onclick="() => ChangeState(task)">
                             @GetStateIcon(task.State)
                         </button>
                     </div>
@@ -70,6 +76,7 @@
             </div>
         }
     </div>
+
 }
 else
 {
@@ -87,6 +94,12 @@ else
     private string _selectedSort = "title";
     private TaskSorter taskSorter = new();
 
+    private int? expandedTaskId;
+
+private void ToggleDescription(int taskId)
+{
+    expandedTaskId = expandedTaskId == taskId ? null : taskId;
+}
     private string selectedSort
     {
         get => _selectedSort;
@@ -193,5 +206,5 @@ else
     }
 
 
-    
+
 }

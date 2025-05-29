@@ -1,0 +1,78 @@
+﻿@page "/settings"
+
+<div class="page-header">
+    <i class="fa fa-gear"></i>
+    <span>Setări</span>
+</div>
+
+
+<div class="settings-container">
+    <!-- Preferințe generale -->
+    <div class="settings-section">
+        <h4>Preferințe generale</h4>
+        <div class="setting-item">
+            <label>Temă întunecată</label>
+            <input type="checkbox" checked="@isDarkMode" @onchange="OnThemeChanged" />
+        </div>
+
+        <div class="setting-item">
+            <label>Notificări activități</label>
+            <input type="checkbox" @bind="notificationsEnabled" />
+        </div>
+    </div>
+
+    <!-- Sincronizare -->
+    <div class="settings-section">
+        <h4>Google Calendar</h4>
+        <div class="setting-item">
+            <label>Sincronizează automat evenimentele</label>
+            <input type="checkbox" @bind="autoSyncGoogleCalendar" />
+        </div>
+        <button class="sync-btn" @onclick="SyncCalendar">🔄 Sincronizează manual</button>
+    </div>
+
+    <!-- Alte -->
+    <div class="settings-section danger-zone">
+        <h4>Zona de risc</h4>
+        <button class="reset-btn" @onclick="ResetAllData">🗑️ Resetează toate datele</button>
+    </div>
+</div>
+
+@code {
+    private bool isDarkMode;
+    private bool notificationsEnabled = true;
+    private bool autoSyncGoogleCalendar = true;
+
+    [Inject] private IJSRuntime JS { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var storedTheme = await JS.InvokeAsync<string>("localStorage.getItem", "darkMode");
+        isDarkMode = storedTheme == "true";
+        await ApplyTheme();
+    }
+
+    private async Task OnThemeChanged(ChangeEventArgs e)
+    {
+        isDarkMode = (bool)e.Value;
+        await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", isDarkMode.ToString().ToLower());
+        await ApplyTheme();
+    }
+
+    private async Task ApplyTheme()
+    {
+        var themeClass = isDarkMode ? "dark" : "";
+        await JS.InvokeVoidAsync("setBodyClass", themeClass);
+    }
+
+    private void SyncCalendar()
+    {
+        Console.WriteLine("Sincronizare Google Calendar...");
+    }
+
+    private void ResetAllData()
+    {
+        Console.WriteLine("Resetarea tuturor datelor...");
+    }
+}
+

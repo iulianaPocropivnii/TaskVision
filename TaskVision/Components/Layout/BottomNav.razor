@@ -1,4 +1,5 @@
-﻿@inject NavigationManager NavManager
+﻿@implements IDisposable
+@inject NavigationManager NavManager
 
 <div class="bottom-nav-container">
     <div class="bottom-nav-bar">
@@ -14,13 +15,29 @@
 
 @code {
     private List<(string Url, string IconClass)> navItems = new()
-    {
-        ("/note", "fa fa-commenting-o"),
-        ("/current-tasks", "fa fa-check-square"),
-        ("/calendar", "fa fa-calendar"),
-        ("/settings", "fa fa-cog")
-    };
+{
+    ("/note", "fa-solid fa-pen-to-square"),         // Notițe: ✏️
+    ("/current-tasks", "fa-solid fa-list-check"),   // Taskuri curente: 📝✅
+    ("/calendar", "fa-solid fa-calendar-days"),     // Calendar: 📅
+    ("/settings", "fa-solid fa-gear")               // Setări: ⚙️
+};
+
 
     private bool IsActive(string url)
         => NavManager.Uri.Contains(url, StringComparison.OrdinalIgnoreCase);
+
+    protected override void OnInitialized()
+    {
+        NavManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        StateHasChanged(); 
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= OnLocationChanged;
+    }
 }
