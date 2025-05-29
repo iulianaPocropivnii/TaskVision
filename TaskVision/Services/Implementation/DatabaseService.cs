@@ -1,48 +1,95 @@
 ﻿using SQLite;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskVision.Services.Interfaces;
 using TaskVision.Models.Tasks;
+using TaskVision.Services.Interfaces;
+using System.Linq;
 
-    namespace TaskVision.Services.Implementation
+namespace TaskVision.Services.Implementation
+{
+    public class DatabaseService : IDatabaseService
     {
-        public class DatabaseService : IDatabaseService
+        private readonly SQLiteConnection _database;
+
+        public DatabaseService()
         {
-            private static readonly string DatabasePath = Path.Combine(FileSystem.AppDataDirectory, "taskmanager.db3");
+            var path = Path.Combine(FileSystem.AppDataDirectory, "taskmanager.db3");
+            _database = new SQLiteConnection(path);
 
-            private static DatabaseService _instance;
-            private static readonly object _lock = new object();
+            // 1) Creăm tabele pentru toate tipurile de task
+            _database.CreateTable<SimpleTask>();
+            _database.CreateTable<DeadlineTask>();
+            _database.CreateTable<RecurringTask>();
+        }
 
-            private readonly SQLiteConnection _database;
+        public List<ITask> GetAllTasks()
+        {
+            // 2) Citim fiecare tabel şi combinăm rezultatele
+            var simple = _database.Table<SimpleTask>()
+                                     .ToList()
+                                     .Cast<ITask>();
+            var deadlines = _database.Table<DeadlineTask>()
+                                     .ToList()
+                                     .Cast<ITask>();
+            var recur = _database.Table<RecurringTask>()
+                                     .ToList()
+                                     .Cast<ITask>();
 
-            private DatabaseService()
+            // Opțional: poți ordona după Start/Deadline
+            return simple
+                  .Concat(deadlines)
+                  .Concat(recur)
+                  .OrderBy(t => t.Start)
+                  .ToList();
+        }
+
+        public void AddTask(ITask task)
+        {
+            // 3) Insert în funcție de tip
+            switch (task)
             {
-                _database = new SQLiteConnection(DatabasePath);
-                _database.Execute("PRAGMA foreign_keys = ON;");
-                _database.CreateTable<SimpleTask>();
-                _database.CreateTable<RecurringTask>();
-                _database.CreateTable<DeadlineTask>();
+                case SimpleTask st:
+                    _database.Insert(st);
+                    break;
+                case DeadlineTask dt:
+                    _database.Insert(dt);
+                    break;
+                case RecurringTask rt:
+                    _database.Insert(rt);
+                    break;
             }
+        }
 
-            public static IDatabaseService Instance
+        public void UpdateTask(ITask task)
+        {
+            // 4) Update în funcție de tip
+            switch (task)
             {
-                get
-                {
-                    lock (_lock)
-                    {
-                        if (_instance == null)
-                            _instance = new DatabaseService();
-
-                        return _instance;
-                    }
-                }
+                case SimpleTask st:
+                    _database.Update(st);
+                    break;
+                case DeadlineTask dt:
+                    _database.Update(dt);
+                    break;
+                case RecurringTask rt:
+                    _database.Update(rt);
+                    break;
             }
+        }
 
-            public void AddDbTask(ITask task) => _database.Insert(task);
-            public void RemoveDbTask(ITask task) => _database.Delete(task);
-            public void UpdateDbTask(ITask updatedTask) => _database.Update(updatedTask);
+        public void RemoveTask(ITask task)
+        {
+            // 5) Delete în funcție de tip
+            switch (task)
+            {
+                case SimpleTask st:
+                    _database.Delete(st);
+                    break;
+                case DeadlineTask dt:
+                    _database.Delete(dt);
+                    break;
+                case RecurringTask rt:
+                    _database.Delete(rt);
+                    break;
+            }
         }
     }
-
+}

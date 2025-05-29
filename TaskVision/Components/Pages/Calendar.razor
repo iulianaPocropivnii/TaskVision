@@ -1,73 +1,193 @@
 ﻿@page "/calendar"
-@inject NavigationManager Navigation
+@inject IDatabaseService DatabaseService
+@using TaskVision.Models.Calendar
+@using TaskVision.Models.FactoryMethod.TaskCreator
+@using TaskVision.Models.Tasks
+@using TaskVision.Models.FactoryMethod
+@using TaskVision.Models.ChainOfResponsability
+@using TaskVision.Enum
 
-<h3 class="text-center mb-4">Calendar Evenimente</h3>
+<h3 class="calendar-header">📅 Task Schedule</h3>
 
-<div class="calendar-container">
-    @for (var week = 0; week < 6; week++)
-    {
-        <div class="calendar-row">
-            @for (var day = 0; day < 7; day++)
-            {
-                var current = calendarStart.AddDays(week * 7 + day);
-                var hasEvent = events.Any(e => e.Date.Date == current.Date);
-                var classes = "calendar-cell";
+<div class="calendar-wrapper">
+    <div class="calendar-date-selector">
+        <input type="date" class="form-control calendar-date" @bind="selectedDate" @bind:event="oninput" />
+    </div>
 
-                if (current.Month != selectedMonth.Month)
-                    classes += " other-month";
-
-                if (current.Date == selectedDate.Date)
-                    classes += " selected";
-
-                if (hasEvent)
-                    classes += " has-event";
-
-                <div class="@classes" @onclick="() => SelectDate(current)">
-                    <span>@current.Day</span>
-                </div>
-            }
-        </div>
-    }
-</div>
-
-<div class="mt-4">
-    <h5>Evenimente pentru: @selectedDate.ToShortDateString()</h5>
-    <ul>
-        @foreach (var ev in events.Where(e => e.Date.Date == selectedDate.Date))
+    <div class="calendar-grid">
+        @foreach (var day in daysInMonth)
         {
-            <li>@ev.Title</li>
-        }
-    </ul>
+            var isSelected = day.Date == selectedDate.Date;
+            var hasTasks = allTasks.Any(t => t.Start.Date == day.Date);
 
-    <input type="text" placeholder="Titlu eveniment" @bind="eventTitle" class="form-control mt-2" />
-    <button class="btn btn-success mt-1" @onclick="AddEvent">Adaugă Eveniment</button>
+                <div class="calendar-cell @(isSelected ? "selected" : "") @(hasTasks ? "has-task" : "")"
+                     @onclick="() => SelectDate(day.Date)">
+                @day.Day
+                </div>
+        }
+    </div>
+
+    <div class="task-summary">
+        <h4 class="task-summary-header">Taskuri pentru @selectedDate.ToString("dd MMMM yyyy")</h4>
+
+        @if (tasksForDay.Any())
+        {
+
+                <div class="task-list">
+                @foreach (var task in tasksForDay.OrderBy(t => t.Start))
+                {
+                            <div class="task-card-badge" style="background-color:@task.Color" @onclick="() => ToggleTaskDescription(task)">
+                                <span>@task.Title</span>
+                                <span class="time-badge">@task.Start.ToString("hhtt") - @task.End.ToString("hhtt")</span>
+                            </div>
+                    @if (expandedTask == task)
+                    {
+                                    <div class="task-description">
+                                        <em>@task.Description</em>
+                                    </div>
+                    }
+                }
+                </div>
+        }
+        else
+        {
+                <p class="text-muted">Nu există taskuri pentru această zi.</p>
+        }
+    </div>
+
+    <div class="task-actions">
+        <button class="add-task-btn" @onclick="ToggleForm">➕ Adaugă task</button>
+    </div>
+
+    @if (showForm)
+    {
+            <div class="add-task-form">
+                <select class="form-control" @bind="selectedTaskType">
+                    <option value="Simple">Task simplu</option>
+                    <option value="Deadline">Task cu termen</option>
+                </select>
+            <label>Prioritate</label>
+            <select class="form-control" @bind="selectedPriority">
+                <option value="Low">Scăzută</option>
+                <option value="Medium">Medie</option>
+                <option value="High">Înaltă</option>
+            </select>
+
+
+                <input class="form-control" @bind="newTitle" placeholder="Titlu task" />
+                <textarea class="form-control" @bind="newDescription" placeholder="Descriere"></textarea>
+
+            @if (selectedTaskType == "Simple")
+            {
+                        <label>Ora de început</label>
+                        <input type="time" class="form-control" @bind-value="startTime" @bind-value:event="oninput" />
+
+                        <label>Ora de sfârșit</label>
+                        <input type="time" class="form-control" @bind-value="endTime" @bind-value:event="oninput" />
+            }
+            else if (selectedTaskType == "Deadline")
+            {
+                        <label>Deadline</label>
+                        <input type="time" class="form-control" @bind-value="endTime" @bind-value:event="oninput" />
+            }
+
+                <div class="text-danger">@validationError</div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button class="btn-save" @onclick="SaveTask">💾 Salvează</button>
+                </div>
+            </div>
+    }
 </div>
 
 @code {
     private DateTime selectedDate = DateTime.Today;
-    private DateTime selectedMonth = DateTime.Today;
-    private DateTime calendarStart => selectedMonth.AddDays(-(int)selectedMonth.DayOfWeek);
+    private List<ITask> allTasks = new();
+    private List<ITask> tasksForDay = new();
+    private List<DateTime> daysInMonth = new();
+    private ITask expandedTask = null;
 
-    private string eventTitle;
-    private List<CalendarEvent> events = new();
+    private bool showForm = false;
+    private string newTitle = "";
+    private string newDescription = "";
+    private DateTime startTime = DateTime.Today.AddHours(9);
+    private DateTime endTime = DateTime.Today.AddHours(10);
+    private string selectedTaskType = "Simple";
+    private string validationError = string.Empty;
+    private TaskPriority selectedPriority = TaskPriority.Medium;
+
+
+    protected override void OnInitialized()
+    {
+        allTasks = DatabaseService.GetAllTasks();
+        GenerateDaysInMonth();
+        FilterTasksForDay();
+    }
+
+    private void GenerateDaysInMonth()
+    {
+        var firstDay = new DateTime(selectedDate.Year, selectedDate.Month, 1);
+        daysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(firstDay.Year, firstDay.Month))
+            .Select(day => new DateTime(firstDay.Year, firstDay.Month, day))
+            .ToList();
+    }
 
     private void SelectDate(DateTime date)
     {
         selectedDate = date;
+        FilterTasksForDay();
     }
 
-    private void AddEvent()
+    private void FilterTasksForDay()
     {
-        if (!string.IsNullOrWhiteSpace(eventTitle))
+        tasksForDay = allTasks
+            .Where(t => t.Start.Date == selectedDate.Date)
+            .ToList();
+    }
+
+    private void ToggleForm() => showForm = !showForm;
+
+    private void ToggleTaskDescription(ITask task)
+    {
+        expandedTask = expandedTask == task ? null : task;
+    }
+
+    private void SaveTask()
+    {
+        var builder = new Builder(DatabaseService)
+            .WithTitle(newTitle)
+            .WithDescription(newDescription)
+            .WithColor(selectedTaskType == "Deadline" ? "#ff7675" : "#74b9ff")
+            .WithPriority(selectedPriority);
+
+        if (selectedTaskType == "Deadline")
         {
-            events.Add(new CalendarEvent { Date = selectedDate, Title = eventTitle });
-            eventTitle = string.Empty;
+            var deadline = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, endTime.Hour, endTime.Minute, 0);
+            builder.WithDeadline(deadline);
         }
-    }
+        else
+        {
+            builder.WithStart(selectedDate.Date.Add(startTime.TimeOfDay))
+                   .WithEnd(selectedDate.Date.Add(endTime.TimeOfDay));
+        }
 
-    public class CalendarEvent
-    {
-        public DateTime Date { get; set; }
-        public string Title { get; set; }
+        var task = builder.Build();
+
+        var validator = new TitleValidator()
+            .SetNext(new TimeRangeHandler());
+
+        var result = validator.Validate(task);
+        if (!result.IsValid)
+        {
+            validationError = result.ErrorMessage;
+            return;
+        }
+
+        DatabaseService.AddTask(task);
+        allTasks.Add(task);
+        FilterTasksForDay();
+
+        showForm = false;
+        newTitle = newDescription = "";
+        validationError = string.Empty;
     }
 }

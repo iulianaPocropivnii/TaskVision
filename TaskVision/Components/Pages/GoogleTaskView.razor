@@ -1,0 +1,39 @@
+﻿@page "/google"
+@inject IGoogleCalendarAdapter CalendarAdapter
+
+<h3>My Google Calendar Tasks</h3>
+
+@if (tasks is null)
+{
+    <p><em>Loading…</em></p>
+}
+else if (!tasks.Any())
+{
+    <p>No upcoming events.</p>
+}
+else
+{
+    <ul>
+        @foreach (var t in tasks)
+        {
+            <li>
+                <strong>@t.Title</strong>
+                <br />
+                @t.Start:g – @t.End:g
+                <br />
+                @t.Description
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<ITask> tasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // load all events as ITask
+        tasks = await CalendarAdapter.GetAllEventsAsync();
+        Console.WriteLine($"Loaded {tasks.Count} Google events.");
+    }
+}

@@ -9,6 +9,10 @@ namespace TaskVision.Models.State
 {
     public class InProgressState : ITaskState
     {
+        public void Next(ITask task)
+        {
+            task.State = new DoneState();
+        }
         public void Start(TaskEntity task)
         {
             Console.WriteLine("Task is already in progress.");

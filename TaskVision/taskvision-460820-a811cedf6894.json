@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "taskvision-460820",
+  "private_key_id": "a811cedf6894d387677b10ae58b2b710f7cc38f0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDyzImd1bbBy5FK\nDr5vaM9LPUtvntTB40lbJiMfZ+wtsl3dLLMuWSfe9ZnsNx6uDjf3b6J4Z6iod3/e\nsDQPWo8vPSPK2eu9HXRlBTQnIGrA4Y75cnro0pG0IsOiGvm9K9EyqvNnLHEkqOQZ\n4M6jDa+9pj5IGU3qoA1BlnXvgzfsQFN76rIaxd0x1sonhD2fj9JLDe7ajhLlnAwn\ndX928rdFVCvXX4No1HdLIuyLRqq1hmTG5RMxncgg5/qY44fnvo78sN8EYKInoNUS\n1NmbQSqCO4SpRb8na9soxqGbBQfq508FMWDo+5KbGAiTlAcQNnI1CBHAQuASlmUi\n8XShiEe3AgMBAAECggEAQxdk8aHUCfIT+DhhxAxct6g815+2n8sMAq1jqDKBz1DJ\n4iuPab/GJjSMr3q9thAExBFrfkT6lG7M/T6IbDO0fDOzV8LnAs+IUb/h3Ov2w8yw\nQtqw/vPswi+XCozUtMLOYGdfsgNUUnJ+8W2u+9x00v2EmUywvKQ0dYq7lQ8X3WaR\nOlyqetktzCObccblLuUfnpBv9KIiJ1dmsC4Oq+Mi4++IUQQgxWZMl/FkafDK7K3i\noXNK22jByiWbt917TZDYlk7Qj4lTLoxn6UmKRpoktw7Qj2epoiyvP0/ZsmYrrWwx\nhdgdqtD1jn10mHSyq9XJ6aSvKToJ7BvPMmP74cA7DQKBgQD+qeJi7WC336LjGkHn\nl7HehfaYOgW0rRbGIjKfY07O+ucgCsK2ZPMfVACNfnrVLe4umL81dDxoPXVQKdsX\nhwpfqvnTV9ehYXkEHwgcVr53TelMbQcjJ+NGbfAkUpqYr23qr+RSRW+TWPVLNrDj\n9MK8e5NXKx/lucs50Ldy/oGDtQKBgQD0ErbZ/OCYa7vvLLi4b5vCVwTFKhASX4r6\nIQriQSXCQ2TvdmdMWMnbOx9ly5qmJTr29yNLzTRKlFfQ3tkCcluehQfp6zPivlDV\nQtt35/12KxqbKFSecjAeGUJnvFlM4UXS4MKOrb6OnyF1i4S9naBBtZo8Kd49CEx2\nP1hYkHFZOwKBgE9OJlL6a2k3eqlQjv+JLPoIK+ACCa7XTEVNdwhNy8gHOJyw3Swh\nydiSt01Y+vWSRR87sCf8V6d6pCLftfvgsOlT/FLFg0Adc6tF4qe4l73dhG6pcVSQ\nYmWXbPZSxxQPZaJ1PhwkxXdUd6cBlBqZKV+6+ApoQpmuv0v05HwqJ7kVAoGBAM0E\nc0fEnLwrst+DB18VkRa7lawwWvO0Ab99xfCrnJYDmmNzZ+2/nz9h+Eu/rRXmrBML\nIUDpDAWheepfZpYhjUgooq8g/KJ4Dto0oLmly0hZiK3QQNQfQr/lo9wTYEet6sLq\nPUMwOqL+lFJycXv9TcIkU3w6Bw3pTKD/MKykGDJFAoGBAM+8+WT5pe6BeGKhBkX4\nCw7vinTCCVzYR+701wlIfAxZ6dIzvIgO+EcRIc5vcLDezAG+cgjDpF3+JnwOSOhT\n1gVGjS8L8Hqhv1lAVMprXRBmtkreJ6x07v6a5IZFe9PN/2D9HWHfA8QNbw9eFQQg\nss8wqXVrQ+rHIGR/iLR1OzHH\n-----END PRIVATE KEY-----\n",
+  "client_email": "taskvision-calendar@taskvision-460820.iam.gserviceaccount.com",
+  "client_id": "116099603126002411594",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/taskvision-calendar%40taskvision-460820.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

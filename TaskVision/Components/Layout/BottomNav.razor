@@ -1,20 +1,26 @@
-﻿<div class="bottom-nav">
-    <button @onclick="@( () => NavigateTo("/") )">
-        <i class="fa fa-home"></i>
-    </button>
-    <button @onclick="@( () => NavigateTo("/calendar") )">
-        <i class="fa fa-calendar"></i>
-    </button>
-    <button @onclick="@( () => NavigateTo("/strategy-demo") )">
-        <i class="fa fa-check-square" aria-hidden="true"></i>
-	</button>
-    <button @onclick="@( () => NavigateTo("/profile") )">
-        <i class="fa fa-user"></i>
-    </button>
+﻿@inject NavigationManager NavManager
+
+<div class="bottom-nav-container">
+    <div class="bottom-nav-bar">
+        @foreach (var item in navItems)
+        {
+            <button class="nav-btn @(IsActive(item.Url) ? "active" : "")"
+                    @onclick="() => NavManager.NavigateTo(item.Url)">
+                <i class="@item.IconClass"></i>
+            </button>
+        }
+    </div>
 </div>
 
 @code {
-    [Inject] private NavigationManager NavigationManager { get; set; }
+    private List<(string Url, string IconClass)> navItems = new()
+    {
+        ("/note", "fa fa-commenting-o"),
+        ("/current-tasks", "fa fa-check-square"),
+        ("/calendar", "fa fa-calendar"),
+        ("/settings", "fa fa-cog")
+    };
 
-    private void NavigateTo(string url) => NavigationManager.NavigateTo(url);
+    private bool IsActive(string url)
+        => NavManager.Uri.Contains(url, StringComparison.OrdinalIgnoreCase);
 }

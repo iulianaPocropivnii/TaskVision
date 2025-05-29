@@ -1,0 +1,152 @@
+﻿@page "/note"
+@inject INoteDatabaseService NoteService
+@using TaskVision.Models.Notion
+
+<h3 class="today-header">📝 Notițele mele</h3>
+
+<!-- Selectare grup -->
+<div class="group-select">
+    <label>Selectează folderul:</label>
+    <select @bind="selectedGroupId">
+        <option value="0">-- selectează --</option>
+        @foreach (var group in groups)
+        {
+            <option value="@group.Id">@group.Title</option>
+        }
+    </select>
+    <input placeholder="Titlu folder nou" @bind="newGroupTitle" />
+    <button @onclick="AddGroup">➕ Creează folder</button>
+</div>
+
+@if (selectedGroupId > 0)
+{
+    <!-- Form pentru adăugare/editare notă -->
+    <div class="note-form">
+        <input placeholder="Titlu notă" @bind="noteTitle" />
+        <textarea placeholder="Conținut" @bind="noteContent"></textarea>
+        @if (editingNote == null)
+        {
+            <button @onclick="ExecuteAddNoteCommand">💾 Adaugă notă</button>
+        }
+        else
+        {
+            <button @onclick="ExecuteUpdateNoteCommand">💾 Salvează modificările</button>
+            <button @onclick="CancelEdit">✖ Anulează</button>
+        }
+    </div>
+
+    <!-- Listare notițe -->
+    <ul class="note-list">
+        @foreach (var note in notes)
+        {
+            <li>
+                <b>@note.Title</b><br />
+                <span>@note.Content</span>
+                <div class="note-actions">
+                    <button @onclick="() => EditNote(note)">✏️</button>
+                    <button @onclick="() => ExecuteDeleteNoteCommand(note)">🗑️</button>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<NoteGroup> groups = new();
+    private List<SimpleNote> notes = new();
+    private int _selectedGroupId;
+    private int selectedGroupId
+    {
+        get => _selectedGroupId;
+        set
+        {
+            _selectedGroupId = value;
+            _ = LoadNotes();
+        }
+    }
+
+    private string newGroupTitle = "";
+    private string noteTitle = "";
+    private string noteContent = "";
+
+    private SimpleNote editingNote;
+
+    protected override async Task OnInitializedAsync()
+    {
+        groups = await NoteService.GetAllGroupsAsync();
+    }
+
+    private async Task LoadNotes()
+    {
+        if (selectedGroupId > 0)
+        {
+            notes = await NoteService.GetNotesByGroupAsync(selectedGroupId);
+        }
+    }
+
+    private async Task AddGroup()
+    {
+        if (!string.IsNullOrWhiteSpace(newGroupTitle))
+        {
+            var group = new NoteGroup { Title = newGroupTitle };
+            await NoteService.AddGroupAsync(group);
+            groups = await NoteService.GetAllGroupsAsync();
+            newGroupTitle = "";
+        }
+    }
+
+    private async Task ExecuteAddNoteCommand()
+    {
+        if (!string.IsNullOrWhiteSpace(noteTitle))
+        {
+            var note = new SimpleNote
+                {
+                    Title = noteTitle,
+                    Content = noteContent,
+                    NoteGroupId = selectedGroupId
+                };
+
+            var command = new AddNoteCommand(NoteService, note);
+            await command.ExecuteAsync();
+
+            notes = await NoteService.GetNotesByGroupAsync(selectedGroupId);
+            noteTitle = noteContent = "";
+        }
+    }
+
+    private async Task ExecuteUpdateNoteCommand()
+    {
+        if (editingNote != null)
+        {
+            editingNote.Title = noteTitle;
+            editingNote.Content = noteContent;
+
+            var command = new UpdateNoteCommand(NoteService, editingNote);
+            await command.ExecuteAsync();
+
+            notes = await NoteService.GetNotesByGroupAsync(selectedGroupId);
+            CancelEdit();
+        }
+    }
+
+    private async Task ExecuteDeleteNoteCommand(SimpleNote note)
+    {
+        var command = new DeleteNoteCommand(NoteService, note);
+        await command.ExecuteAsync();
+
+        notes = await NoteService.GetNotesByGroupAsync(selectedGroupId);
+    }
+
+    private void EditNote(SimpleNote note)
+    {
+        editingNote = note;
+        noteTitle = note.Title;
+        noteContent = note.Content;
+    }
+
+    private void CancelEdit()
+    {
+        editingNote = null;
+        noteTitle = noteContent = "";
+    }
+}

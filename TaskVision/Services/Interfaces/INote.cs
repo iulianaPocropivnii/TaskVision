@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace TaskVision.Services.Interfaces
 {
-    public interface ICommand
+    public interface INote
     {
-        Task ExecuteAsync();
+        int Id { get; set; }
+        string Title { get; set; }
     }
+
 }

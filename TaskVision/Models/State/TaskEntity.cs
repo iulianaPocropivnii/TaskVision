@@ -9,8 +9,30 @@ using TaskVision.Services.Interfaces;
 
 namespace TaskVision.Models.State
 {
-    public class TaskEntity
+    public class TaskEntity: ITask
     {
+        public DateTime Start { get; set; }
+        public DateTime Deadline { get; }
+        public DateTime End { get; set; }
+        public string Description { get; set; }
+        public TaskPriority Priority { get; set; }
+        public string Color { get; set; }
+        public int Id { get; set; }
+        public ITaskState State
+        {
+            get => _currentState;
+            set => _currentState = value;
+        }
+        public ITask Clone()
+        {
+            return (ITask)this.MemberwiseClone();
+        }
+
+        public void UpdateTask()
+        {
+            // implementare dacă e necesară
+        }
+
         public string Title { get; set; }
         private ITaskState _currentState;
 
@@ -42,7 +64,7 @@ namespace TaskVision.Models.State
 
         public TaskMemento SaveState()
         {
-            return new TaskMemento(Title, _currentState);
+            return new TaskMemento(this);
         }
 
         public void RestoreState(TaskMemento memento)
