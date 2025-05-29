@@ -9,10 +9,15 @@ namespace TaskVision.Services.Interfaces
 {
     public interface ITask : IPrototype<ITask>
     {
-        string Title { get; }
-        string Description { get; }
+        public int Id { get; set; }
+        string Title { get; set; }
+        string Description { get; set; }
+        DateTime Start { get; set; }
+        DateTime End { get; set; }
+        string Color { get; set; }
         DateTime Deadline { get; }
-        TaskPriority Priority { get; }
+        public ITaskState State { get; set; }
+        public TaskPriority Priority { get; set; }
         void UpdateTask();
     }
 }

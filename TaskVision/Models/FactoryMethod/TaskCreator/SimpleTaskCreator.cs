@@ -1,6 +1,6 @@
 ﻿using TaskVision.Services.Interfaces;
 using TaskVision.Models.Tasks;
-using TaskVision.Models.Tasks.Builder;
+using TaskVision.Enum;
 
 namespace TaskVision.Models.FactoryMethod.TaskCreator
 {
@@ -15,10 +15,12 @@ namespace TaskVision.Models.FactoryMethod.TaskCreator
 
         public override ITask FactoryMethod()
         {
-            return new TaskBuilder()
-                .WithTitle("Titlu Default")
-                .WithDescription("Descriere simplă")
-                .WithDatabaseService(_databaseService)
+            return new Builder(_databaseService)
+                .WithTitle("Task cu deadline")
+                .WithDescription("Are termen limită")
+                .WithDeadline(DateTime.Today.AddDays(3))
+                .WithColor("#ff7675")
+                .WithPriority(TaskPriority.High)
                 .Build();
         }
     }

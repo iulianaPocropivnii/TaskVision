@@ -9,6 +9,11 @@ namespace TaskVision.Models.State
 {
     public class ToDoState : ITaskState
     {
+        public void Next(ITask task)
+        {
+            task.State = new InProgressState();
+        }
+
         public void Start(TaskEntity task)
         {
             Console.WriteLine("Task started. Moving from ToDo to InProgress.");

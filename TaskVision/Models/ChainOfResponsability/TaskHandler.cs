@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,19 +11,16 @@ namespace TaskVision.Models.ChainOfResponsability
     public abstract class TaskHandler
     {
         protected TaskHandler _next;
+        public TaskHandler SetNext(TaskHandler next) { _next = next; return next; }
 
-        public void SetNext(TaskHandler next)
+        public ValidationResult Validate(ITask task)
         {
-            _next = next;
+            var result = Handle(task);
+            return (!result.IsValid || _next == null)
+                ? result
+                : _next.Validate(task);
         }
 
-        public virtual bool Handle(ITask task)
-        {
-            if (_next != null)
-            {
-                return _next.Handle(task);
-            }
-            return true;
-        }
+        protected abstract ValidationResult Handle(ITask task);
     }
 }

@@ -5,39 +5,61 @@ using System.Text;
 using System.Threading.Tasks;
 using SQLite;
 using TaskVision.Enum;
+using TaskVision.Models.Memento;
+using TaskVision.Models.State;
 using TaskVision.Services.Interfaces;
 
 namespace TaskVision.Models.Tasks
 {
     public class SimpleTask : ITask
     {
-        private readonly IDatabaseService _databaseService;
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
         public DateTime Deadline { get; set; }
-        public TaskPriority Priority { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public string Color { get; set; } = "#a29bfe";
 
-        public void UpdateTask()
-        {
-            _databaseService.UpdateDbTask(this);
+        public string StateName { get; set; } = "ToDo"; // 🔁 Se salvează în SQLite
 
-        }
-        public SimpleTask(IDatabaseService databaseService)
+        [Ignore]
+        public ITaskState State
         {
-            _databaseService = databaseService;
-        }
-        public ITask Clone()
-        {
-            return new SimpleTask(_databaseService)
+            get => StateName switch
             {
-                Id = this.Id,
-                Title = this.Title,
-                Description = this.Description,
-                Deadline = this.Deadline,
-                Priority = this.Priority
+                "ToDo" => new ToDoState(),
+                "InProgress" => new InProgressState(),
+                "Done" => new DoneState(),
+                _ => new ToDoState()
+            };
+            set => StateName = value switch
+            {
+                ToDoState => "ToDo",
+                InProgressState => "InProgress",
+                DoneState => "Done",
+                _ => "ToDo"
             };
         }
+
+        public SimpleTask() { }
+
+        public void UpdateTask() { }
+
+        public ITask Clone()
+        {
+            return (ITask)this.MemberwiseClone();
+        }
+
+        public TaskMemento SaveState()
+        {
+            return new TaskMemento(this);
+        }
     }
+
+
 }
+

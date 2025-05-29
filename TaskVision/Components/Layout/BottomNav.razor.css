@@ -1,28 +1,32 @@
-.bottom-nav {
+.bottom-nav-container {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background-color: #fff;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.1);
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e1e1e;
+    padding: 8px;
+    border-radius: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 100;
 }
 
-    .bottom-nav button {
+.bottom-nav-bar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+    .bottom-nav-bar .nav-btn {
         background: none;
         border: none;
-        font-size: 24px;
-        color: black;
+        color: white;
+        font-size: 20px;
+        padding: 12px;
+        border-radius: 50%;
+        transition: background 0.2s ease;
     }
 
-        .bottom-nav button:focus {
-            outline: none;
+        .bottom-nav-bar .nav-btn.active {
+            background-color: white;
+            color: black;
         }
-
-    .bottom-nav i {
-        pointer-events: none;
-    }

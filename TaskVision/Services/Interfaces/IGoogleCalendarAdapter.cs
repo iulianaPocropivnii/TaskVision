@@ -9,6 +9,7 @@ namespace TaskVision.Services.Interfaces
 {
     public interface IGoogleCalendarAdapter
     {
-        Task<List<CalendarEvent>> GetEventsAsync(DateTime from, DateTime to);
+        Task<List<ITask>> GetAllEventsAsync();
     }
+
 }

@@ -1,0 +1,197 @@
+﻿@page "/current-tasks"
+@inject IDatabaseService DatabaseService
+@using TaskVision.Models.Tasks
+@using TaskVision.Models.Memento
+@using TaskVision.Models.State
+@using TaskVision.Enum
+@using TaskVision.Models.Strategy
+@using TaskVision.Models.Observer
+
+<h3 class="today-header">✅ Taskuri curente</h3>
+
+<div class="sort-controls">
+    <label>🔽 Sortează după:</label>
+    <select @bind="selectedSort">
+        <option value="title">Titlu</option>
+        <option value="priority">Prioritate</option>
+        <option value="deadline">Deadline</option>
+    </select>
+</div>
+
+@if (tasks.Any())
+{
+    <div class="calendar-container">
+        @foreach (var task in tasks)
+        {
+            <div class="calendar-task">
+                <div class="priority-indicator @GetPriorityClass(task.Priority)" title="Prioritate: @task.Priority"></div>
+
+                <div class="task-top-row">
+                    <button class="edit-btn" @onclick="() => StartEditing(task)">📝</button>
+                    <div class="task-title">
+                        @if (IsEditing(task))
+                        {
+                            <input class="edit-input" @bind="editableTask.Title" />
+                        }
+                        else
+                        {
+                            @task.Title
+                        }
+                    </div>
+                </div>
+
+                <div class="task-bottom-row">
+                    @if (IsEditing(task))
+                    {
+                        <textarea class="edit-textarea" @bind="editableTask.Description"></textarea>
+                    }
+                    else
+                    {
+                        <div class="task-desc">@task.Description</div>
+                    }
+
+                    <div class="task-meta">
+                        <span class="task-time-badge">
+                            @task.Start.ToString("hh tt") - @task.End.ToString("hh tt")
+                        </span>
+                        <button class="state-btn" @onclick="() => ChangeState(task)">
+                            @GetStateIcon(task.State)
+                        </button>
+                    </div>
+                </div>
+
+                @if (IsEditing(task))
+                {
+                    <div class="task-actions">
+                        <button class="btn-snapshot" @onclick="() => SaveChanges(task)">💾 Salvează</button>
+                        <button class="btn-snapshot" @onclick="() => CancelEditing()">✖ Anulează</button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Nu există taskuri pentru azi.</p>
+}
+
+@code {
+    private List<ITask> tasks = new();
+    private Dictionary<int, TaskHistory> taskHistories = new();
+    private ITask editableTask;
+    private int editingTaskId = -1;
+    private TaskNotifier notifier = new();
+
+
+    private string _selectedSort = "title";
+    private TaskSorter taskSorter = new();
+
+    private string selectedSort
+    {
+        get => _selectedSort;
+        set
+        {
+            _selectedSort = value;
+            ApplySorting();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        // atașăm observatorii la subiect
+        notifier.Attach(new PopupNotifier());
+        notifier.Attach(new EmailNotifier("admin@taskvision.com"));
+
+        var all = DatabaseService.GetAllTasks();
+        var today = DateTime.Today;
+        tasks = all.Where(t => t.Start.Date == today).ToList();
+        ApplySorting();
+    }
+
+    private void ApplySorting()
+    {
+        ISortingStrategy strategy = selectedSort switch
+        {
+            "priority" => new SortByPriority(),
+            "deadline" => new SortByDeadline(),
+            _ => new SortByTitle()
+        };
+
+        taskSorter.SetStrategy(strategy);
+        tasks = taskSorter.ExecuteSort(tasks).ToList();
+    }
+
+    private void SaveSnapshot(ITask task)
+    {
+        if (!taskHistories.ContainsKey(task.Id))
+            taskHistories[task.Id] = new TaskHistory();
+
+        var memento = new TaskMemento(task);
+        taskHistories[task.Id].Save(memento);
+    }
+
+    private void ChangeState(ITask task)
+    {
+        task.State?.Next(task);
+        DatabaseService.UpdateTask(task);
+
+        notifier.Notify($"Taskul „{task.Title}” a fost schimbat în starea: {task.State.GetType().Name}");
+
+        StateHasChanged();
+    }
+
+
+    private string GetStateIcon(ITaskState state)
+    {
+        return state switch
+        {
+            ToDoState => "📝",
+            InProgressState => "🔧",
+            DoneState => "✅",
+            _ => "❓"
+        };
+    }
+
+    private void StartEditing(ITask task)
+    {
+        editableTask = task.Clone();
+        editingTaskId = task.Id;
+    }
+
+    private bool IsEditing(ITask task) => editingTaskId == task.Id;
+
+    private void CancelEditing()
+    {
+        editableTask = null;
+        editingTaskId = -1;
+    }
+
+    private void SaveChanges(ITask originalTask)
+    {
+        SaveSnapshot(originalTask);
+        originalTask.Title = editableTask.Title;
+        originalTask.Description = editableTask.Description;
+
+        DatabaseService.UpdateTask(originalTask);
+
+        notifier.Notify($"Taskul „{originalTask.Title}” a fost modificat.");
+
+        CancelEditing();
+    }
+
+
+    private string GetPriorityClass(TaskPriority priority)
+    {
+        return priority switch
+        {
+            TaskPriority.High => "priority-high",
+            TaskPriority.Medium => "priority-medium",
+            TaskPriority.Low => "priority-low",
+            _ => "priority-medium"
+        };
+    }
+
+
+    
+}

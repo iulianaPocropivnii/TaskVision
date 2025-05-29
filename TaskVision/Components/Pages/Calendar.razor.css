@@ -1,34 +1,182 @@
-.calendar-container {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    max-width: 100%;
+﻿.calendar-header {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2d3436;
 }
 
-.calendar-row {
-    display: contents;
+.calendar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    overflow-y: auto;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.priority-legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: white;
+}
+
+.legend-circle {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+
+.calendar-date-selector {
+    margin-bottom: 1rem;
+}
+
+.calendar-date {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #dcdde1;
+    font-size: 1rem;
+    background-color: #f5f6fa;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 40px);
+    gap: 8px;
+    margin-bottom: 1.5rem;
 }
 
 .calendar-cell {
-    border: 1px solid #ccc;
-    padding: 15px;
-    text-align: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #dfe6e9;
+    color: #2d3436;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    min-height: 70px;
-    position: relative;
-    background-color: #f8f9fa;
+    transition: 0.2s ease;
 }
 
-    .calendar-cell.other-month {
-        opacity: 0.5;
+    .calendar-cell:hover {
+        background-color: #b2bec3;
     }
 
     .calendar-cell.selected {
-        border: 2px solid #007bff;
-        background-color: #e7f1ff;
+        background-color: #6c5ce7;
+        color: #fff;
     }
 
-    .calendar-cell.has-event {
-        background-color: #d4edda;
-        border-color: #28a745;
+    .calendar-cell.has-task {
+        background-color: #81ecec;
     }
+
+.task-summary {
+    width: 100%;
+    max-width: 400px;
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.task-summary-header {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #2d3436;
+}
+
+.task-card {
+    background-color: #dff9fb;
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    color: #2d3436;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.task-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.task-time {
+    font-size: 0.9rem;
+    color: #636e72;
+    margin-top: 5px;
+}
+
+.task-desc {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.text-muted {
+    color: #aaa;
+    font-style: italic;
+}
+.add-task-form {
+    position: relative;
+    z-index: 1;
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 130px; /* suficient peste tastatură și nav-bar */
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    width: 100%;
+    max-width: 420px;
+}
+.task-card-badge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem auto;
+    border-radius: 2rem;
+    background: linear-gradient(135deg, #a29bfe 0%, #dfe6e9 100%);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    max-width: 420px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+    .task-card-badge:hover {
+        transform: scale(1.02);
+    }
+
+.time-badge {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+}
+
+.task-description {
+    margin: 0.5rem auto 1rem;
+    background-color: #f5f6fa;
+    color: #2d3436;
+    border-radius: 1rem;
+    padding: 0.75rem 1.25rem;
+    max-width: 420px;
+    font-size: 0.9rem;
+    font-style: italic;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.05);
+}
+

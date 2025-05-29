@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
+using TaskVision.Models.Tasks;
+using TaskVision.Enum;
 using TaskVision.Services.Interfaces;
 
-namespace TaskVision.Models.Calendar
+namespace TaskVision.Services.Implementation
 {
     public class GoogleCalendarAdapter : IGoogleCalendarAdapter
     {
@@ -18,43 +19,49 @@ namespace TaskVision.Models.Calendar
         public GoogleCalendarAdapter()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "client_secret.json");
+
             var credential = GoogleCredential.FromFile(path)
                 .CreateScoped(CalendarService.Scope.CalendarReadonly);
 
-            _service = new CalendarService(new BaseClientService.Initializer()
+            _service = new CalendarService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = credential,
-                ApplicationName = "TaskManager",
+                ApplicationName = "TaskVision"
             });
         }
 
-        public async Task<List<CalendarEvent>> GetEventsAsync(DateTime from, DateTime to)
+        public async Task<List<ITask>> GetAllEventsAsync()
         {
+            List<ITask> tasks = new();
+
             EventsResource.ListRequest request = _service.Events.List("primary");
-            request.TimeMin = from;
-            request.TimeMax = to;
+            request.TimeMin = DateTime.UtcNow;
             request.ShowDeleted = false;
             request.SingleEvents = true;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
             Events events = await request.ExecuteAsync();
 
-            List<CalendarEvent> result = new();
             if (events.Items != null)
             {
                 foreach (var e in events.Items)
                 {
-                    result.Add(new CalendarEvent
+                    var start = e.Start.DateTime ?? DateTime.Parse(e.Start.Date);
+                    var end = e.End.DateTime ?? DateTime.Parse(e.End.Date);
+
+                    tasks.Add(new SimpleTask
                     {
-                        Title = e.Summary,
+                        Title = e.Summary ?? "Fără titlu",
                         Description = e.Description ?? "",
-                        Date = e.Start.DateTime.HasValue ? e.Start.DateTime.Value : DateTime.Parse(e.Start.Date),
-                        Type = "GoogleCalendar"
+                        Start = start,
+                        End = end,
+                        Priority = TaskPriority.Medium,
+                        Color = "#F9E79F"
                     });
                 }
             }
 
-            return result;
+            return tasks;
         }
     }
 }

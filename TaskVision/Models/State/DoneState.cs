@@ -9,6 +9,10 @@ namespace TaskVision.Models.State
 {
     public class DoneState : ITaskState
     {
+        public void Next(ITask task)
+        {
+            task.State = new ToDoState(); 
+        }
         public void Start(TaskEntity task)
         {
             Console.WriteLine("Task is already done. Cannot start again.");

@@ -8,8 +8,10 @@ namespace TaskVision.Services.Interfaces
 {
     public interface IDatabaseService
     {
-        void AddDbTask(ITask task);
-        void RemoveDbTask(ITask task);
-        void UpdateDbTask(ITask updatedTask);
+        List<ITask> GetAllTasks();
+        void AddTask(ITask task);
+        void RemoveTask(ITask task);
+        void UpdateTask(ITask task);
     }
+
 }
