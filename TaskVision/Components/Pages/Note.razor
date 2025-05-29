@@ -2,12 +2,16 @@
 @inject INoteDatabaseService NoteService
 @using TaskVision.Models.Notion
 
-<h3 class="today-header">📝 Notițele mele</h3>
+<div class="page-header">
+    <i class="fa-solid fa-pencil-alt"></i>
+    <span>Notițele mele</span>
+</div>
+
 
 <!-- Selectare grup -->
 <div class="group-select">
     <label>Selectează folderul:</label>
-    <select @bind="selectedGroupId">
+    <select @onchange="OnGroupChanged">
         <option value="0">-- selectează --</option>
         @foreach (var group in groups)
         {
@@ -15,7 +19,7 @@
         }
     </select>
     <input placeholder="Titlu folder nou" @bind="newGroupTitle" />
-    <button @onclick="AddGroup">➕ Creează folder</button>
+    <button class ="btn-add" @onclick ="AddGroup">Creează folder</button>
 </div>
 
 @if (selectedGroupId > 0)
@@ -54,16 +58,7 @@
 @code {
     private List<NoteGroup> groups = new();
     private List<SimpleNote> notes = new();
-    private int _selectedGroupId;
-    private int selectedGroupId
-    {
-        get => _selectedGroupId;
-        set
-        {
-            _selectedGroupId = value;
-            _ = LoadNotes();
-        }
-    }
+    private int selectedGroupId;
 
     private string newGroupTitle = "";
     private string noteTitle = "";
@@ -74,6 +69,16 @@
     protected override async Task OnInitializedAsync()
     {
         groups = await NoteService.GetAllGroupsAsync();
+    }
+
+    private async Task OnGroupChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int newId))
+        {
+            selectedGroupId = newId;
+            await LoadNotes();
+            StateHasChanged(); // forțăm re-randarea
+        }
     }
 
     private async Task LoadNotes()

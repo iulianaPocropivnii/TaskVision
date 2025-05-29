@@ -1,0 +1,85 @@
+.settings-header {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 600px;
+    margin: auto;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.settings-section {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+    .settings-section h4 {
+        color: var(--text-color);
+    }
+
+.setting-item label {
+    color: var(--text-color);
+}
+
+.setting-item label {
+    color: var(--text-color);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+    .setting-item:last-child {
+        border-bottom: none;
+    }
+
+.sync-btn, .reset-btn {
+    padding: 10px 20px;
+    color: black;
+    border: none;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sync-btn {
+    background-color: #DCD8FE;
+    color: black;
+}
+
+    .sync-btn:hover {
+        background-color: #2980b9;
+    }
+
+.reset-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+    .reset-btn:hover {
+        background-color: #c0392b;
+    }
+
+.danger-zone {
+    border-left: 4px solid #e74c3c;
+}

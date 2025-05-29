@@ -7,7 +7,10 @@
 @using TaskVision.Models.ChainOfResponsability
 @using TaskVision.Enum
 
-<h3 class="calendar-header">📅 Task Schedule</h3>
+<div class="page-header">
+    <i class="fa fa-calendar-alt"></i>
+    <span>Task Schedule</span>
+</div>
 
 <div class="calendar-wrapper">
     <div class="calendar-date-selector">
@@ -56,7 +59,7 @@
     </div>
 
     <div class="task-actions">
-        <button class="add-task-btn" @onclick="ToggleForm">➕ Adaugă task</button>
+        <button class="add-task-btn" @onclick="ToggleForm">Adaugă task</button>
     </div>
 
     @if (showForm)

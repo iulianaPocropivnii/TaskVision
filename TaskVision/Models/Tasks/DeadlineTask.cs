@@ -22,7 +22,7 @@ namespace TaskVision.Models.Tasks
         public TaskPriority Priority { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public string Color { get; set; }
+        public string Color { get; set; } = "#B99BFE";
         public string StateName { get; set; } = "ToDo";
 
         [Ignore]

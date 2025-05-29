@@ -86,3 +86,55 @@ h1:focus {
         padding-left: env(safe-area-inset-left);
     }
 }
+
+:root {
+    --bg-color: #ffffff;
+    --card-bg: #f9fafb;
+    --text-color: #2c3e50;
+    --primary: #3498db;
+    --danger: #e74c3c;
+}
+
+body.dark {
+    --bg-color: #1e1e1e;
+    --card-bg: #2b2b2b;
+    --text-color: #ecf0f1;
+    --primary: #2980b9;
+    --danger: #c0392b;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 24px;
+    padding-left: 12px;
+}
+
+    .page-header img,
+    .page-header i {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+    }
+
+
+/* aplică variabilele în alte clase */
+.settings-section,
+.welcome-card,
+.note-form,
+.group-select,
+.note-list li {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+
